@@ -1,0 +1,2 @@
+# my-secret-diary-
+DAIRY
