@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>My Cute Secret Diary</title>
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:'Trebuchet MS',sans-serif;
+background:linear-gradient(135deg,#ffe6f2,#e6f7ff);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.container{
+width:95%;
+max-width:700px;
+background:white;
+padding:30px;
+border-radius:30px;
+box-shadow:0 15px 40px rgba(0,0,0,.15);
+}
+
+.top-cute{
+text-align:center;
+font-size:55px;
+margin-top:-5px;
+animation:bounce 2s infinite;
+}
+
+@keyframes bounce{
+50%{transform:translateY(-8px)}
+}
+
+h1{
+text-align:center;
+color:#ff5fa2;
+margin:10px 0;
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px;
+}
+
+input[type=password],input[type=text],textarea{
+width:100%;
+padding:15px;
+border:2px solid #ffd1e8;
+border-radius:16px;
+margin:12px 0;
+font-size:16px;
+}
+
+textarea{
+height:280px;
+resize:none;
+}
+
+button{
+background:#ff7eb6;
+color:white;
+border:none;
+padding:14px 22px;
+border-radius:16px;
+font-size:16px;
+cursor:pointer;
+margin:8px 5px;
+font-weight:bold;
+}
+
+button:hover{
+background:#ff5fa2;
+}
+
+.hidden{display:none}
+
+.entry{
+background:#fff6fb;
+padding:16px;
+border-radius:18px;
+margin-top:15px;
+border:2px dashed #ffc7df;
+}
+
+.date{
+font-size:14px;
+color:#777;
+}
+
+.lock-note{
+background:#fff5c8;
+padding:12px;
+border-radius:14px;
+margin-top:15px;
+}
+
+.stickers{
+text-align:center;
+font-size:36px;
+margin-bottom:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+<div class="top-cute">🐻🌸🐰</div>
+<h1>Secret Diary</h1>
+<p class="subtitle">Your private little world ✨</p>
+
+<div class="stickers">🧸 ⭐ 🍓 🌈 🐱</div>
+
+<input id="password" type="password" placeholder="Enter diary password">
+<button onclick="unlockDiary()">Unlock Diary</button>
+
+<div class="lock-note">
+Default password: <b>mydiary123</b><br>
+(Change it inside code later if you want.)
+</div>
+</div>
+
+
+<!-- DIARY PAGE -->
+<div id="diaryPage" class="hidden">
+<div class="top-cute">🐼📖💖</div>
+<h1>My Personal Diary</h1>
+
+<input id="title" type="text" placeholder="Entry title">
+<textarea id="entryText" placeholder="Dear diary... Today I felt..."></textarea>
+
+<button onclick="saveEntry()">Save Entry</button>
+<button onclick="lockDiary()">Lock</button>
+
+<h2 style="color:#ff5fa2">Saved Entries</h2>
+<div id="entries"></div>
+
+</div>
+
+</div>
+
+<script>
+const diaryPassword = "09062011";
+
+function unlockDiary(){
+let pass=document.getElementById('password').value;
+if(pass===diaryPassword){
+document.getElementById('loginPage').classList.add('hidden');
+document.getElementById('diaryPage').classList.remove('hidden');
+loadEntries();
+}
+else{
+alert('Wrong password 💔');
+}
+}
+
+function lockDiary(){
+document.getElementById('diaryPage').classList.add('hidden');
+document.getElementById('loginPage').classList.remove('hidden');
+document.getElementById('password').value='';
+}
+
+function saveEntry(){
+let title=document.getElementById('title').value || 'Untitled';
+let text=document.getElementById('entryText').value;
+
+if(!text.trim()){
+alert('Write something first ✍️');
+return;
+}
+
+let entries=JSON.parse(localStorage.getItem('diaryEntries')) || [];
+
+entries.unshift({
+title:title,
+text:text,
+date:new Date().toLocaleString()
+});
+
+localStorage.setItem('diaryEntries',JSON.stringify(entries));
+
+document.getElementById('title').value='';
+document.getElementById('entryText').value='';
+
+loadEntries();
+}
+
+function deleteEntry(index){
+let entries=JSON.parse(localStorage.getItem('diaryEntries')) || [];
+entries.splice(index,1);
+localStorage.setItem('diaryEntries',JSON.stringify(entries));
+loadEntries();
+}
+
+function loadEntries(){
+let entries=JSON.parse(localStorage.getItem('diaryEntries')) || [];
+let box=document.getElementById('entries');
+box.innerHTML='';
+
+if(entries.length===0){
+box.innerHTML='<p>No diary entries yet 🌷</p>';
+return;
+}
+
+entries.forEach((e,i)=>{
+box.innerHTML += `
+<div class='entry'>
+<h3>📔 ${e.title}</h3>
+<div class='date'>${e.date}</div>
+<p>${e.text.replace(/\n/g,'<br>')}</p>
+<button onclick='deleteEntry(${i})'>Delete</button>
+</div>
+`;
+});
+}
+</script>
+
+</body>
+</html>
+ 
